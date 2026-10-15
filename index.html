@@ -73,6 +73,15 @@ input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);p
 .acts .btn{padding:11px;font-size:15px}
 .empty{display:grid;gap:8px;text-align:center}
 .note{margin-top:20px;text-align:center}
+.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mh b{text-transform:capitalize}
+.mh button{background:var(--cd);border:1px solid var(--ln);border-radius:12px;width:40px;height:40px;font-size:18px}
+.mh button:disabled{opacity:.35;cursor:default}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .wd{color:var(--mu);font-size:12px;padding:4px 0}
+.dy{aspect-ratio:1;border:1px solid transparent;background:var(--cd);border-radius:12px;font-size:15px}
+.dy.on{border-color:var(--ac);background:rgba(217,68,46,.16)}
+.dy:disabled{background:0;color:#5a544c;cursor:default}
 </style>
 </head>
 <body>
@@ -84,12 +93,12 @@ input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);p
 </nav>
 <div class="sh" id="sh" onclick="if(event.target===this)closeS()"><div class="sheet" role="dialog" aria-modal="true" aria-label="Запись" tabindex="-1"></div></div>
 <script>
-const C={name:'Брикстон',tag:'Барбершоп. Стрижки, борода, бритьё.',cur:'₽',step:30,days:14,
+const C={name:'Брикстон',tag:'Барбершоп. Стрижки, борода, бритьё.',cur:'₽',step:30,days:60,
 hours:{0:[11,18],1:[10,21],2:[10,21],3:[10,21],4:[10,21],5:[10,21],6:[10,20]},
 services:[{id:'cut',n:'Мужская стрижка',m:60,p:1800},{id:'beard',n:'Борода',m:30,p:1000},{id:'combo',n:'Стрижка и борода',m:90,p:2600},{id:'kid',n:'Детская стрижка',m:45,p:1300},{id:'shave',n:'Королевское бритьё',m:45,p:1500}],
 masters:[{id:'a',n:'Артём'},{id:'d',n:'Даниил'},{id:'m',n:'Максим'}]};
 const $=s=>document.querySelector(s),K='brixton_bookings';
-const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:''};
+const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:'',vm:null};
 const ld=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
 const put=a=>{try{localStorage.setItem(K,JSON.stringify(a));return true}catch(e){return false}};
 const E=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -123,8 +132,16 @@ function render(){$('#v').innerHTML=S.tab==='home'?home():S.tab==='svc'?svc():my
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab))}
 const go=t=>{S.tab=t;S.cx=null;render();scrollTo(0,0)};
 function cancel(id){if(S.cx===id){put(ld().filter(b=>b.id!==id));S.cx=null}else S.cx=id;render()}
-const ok=()=>S.t!=null&&S.n.trim().length>1&&S.p.replace(/\D/g,'').length>=6;
+const ok=()=>S.t!=null&&S.n.trim().length>1&&/^\+7 \([3-9]\d{2}\) \d{3}-\d{2}-\d{2}$/.test(S.p);
 const chk=()=>{const g=$('#go');if(g)g.disabled=!ok()};
+function cal(){const v=S.vm,f=new Date(v.y,v.m,1),n=new Date(v.y,v.m+1,0).getDate(),off=(f.getDay()+6)%7,al=days(),ok=new Set(al),a=new Date(al[0]+'T00:00'),z=new Date(al[al.length-1]+'T00:00'),c=v.y*12+v.m;
+let h='';for(const w of['Пн','Вт','Ср','Чт','Пт','Сб','Вс'])h+=`<span class="wd">${w}</span>`;
+for(let i=0;i<off;i++)h+='<i></i>';
+for(let d=1;d<=n;d++){const ds=v.y+'-'+pad(v.m+1)+'-'+pad(d);h+=`<button class="dy ${ds===S.d?'on':''}" ${ok.has(ds)?'':'disabled'} aria-label="${dn(ds)}" onclick="pick('d','${ds}')">${d}</button>`}
+return `<div class="mh"><button aria-label="Прошлый месяц" ${c<=a.getFullYear()*12+a.getMonth()?'disabled':''} onclick="mo(-1)">‹</button><b>${f.toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</b><button aria-label="Следующий месяц" ${c>=z.getFullYear()*12+z.getMonth()?'disabled':''} onclick="mo(1)">›</button></div><div class="cal">${h}</div>`}
+function mo(k){const x=new Date(S.vm.y,S.vm.m+k,1);S.vm={y:x.getFullYear(),m:x.getMonth()};sheet()}
+function fp(v){let d=v.replace(/\D/g,'');if(d[0]==='7'||d[0]==='8')d=d.slice(1);d=d.slice(0,10);let r='';if(d.length)r='+7 ('+d.slice(0,3);if(d.length>3)r+=') '+d.slice(3,6);if(d.length>6)r+='-'+d.slice(6,8);if(d.length>8)r+='-'+d.slice(8,10);return r}
+function ph(el){S.p=fp(el.value);el.value=S.p;chk()}
 function pick(k,v){S[k]=v;if(k!=='t')S.t=null;sheet()}
 function sheet(){const sh=$('.sheet'),top=sh.scrollTop;
 if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы записаны</h2><div class="card bk"><div class="row"><b>${E(SV(b.s).n)}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}, мастер ${E(MS(b.m).n)}</div></div><p class="mu" style="margin:12px 0">Запись сохранена на этом телефоне. Добавьте её в календарь, и iPhone напомнит о визите за час.</p><button class="btn" onclick="ics('${b.id}')">Добавить в календарь</button><button class="btn g" style="margin-top:8px" onclick="closeS()">Готово</button>`;return}
@@ -132,9 +149,9 @@ const sv=SV(S.s),sl=slots(sv,S.m,S.d);if(S.t!=null&&!sl.some(x=>x.t===S.t))S.t=n
 sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
 <p class="lb">Услуга</p><div class="chips">${C.services.map(x=>`<button class="chip ${x.id===S.s?'on':''}" onclick="pick('s','${x.id}')">${E(x.n)}<small>${x.m} мин, ${rub(x.p)}</small></button>`).join('')}</div>
 <p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${E(x.n)}</button>`).join('')}</div>
-<p class="lb">Дата</p><div class="chips">${days().map(d=>`<button class="chip ${d===S.d?'on':''}" onclick="pick('d','${d}')">${dch(d)}</button>`).join('')}</div>
+<p class="lb">Дата</p>${cal()}
 <p class="lb">Время</p>${sl.length?`<div class="times">${sl.map(x=>`<button class="chip ${x.t===S.t?'on':''}" onclick="pick('t',${x.t})">${hm(x.t)}</button>`).join('')}</div>`:'<p class="mu">На этот день свободных окон нет. Выберите другую дату или мастера.</p>'}
-<p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="tel" placeholder="Телефон" autocomplete="tel" value="${E(S.p)}" oninput="S.p=this.value;chk()">
+<p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="numeric" placeholder="+7 (___) ___-__-__" autocomplete="tel-national" value="${E(S.p)}" oninput="ph(this)"><small>Номер из 11 цифр, например +7 (912) 345-67-89</small>
 <p class="err" role="alert">${E(S.err)}</p><button class="btn" id="go" onclick="book()">Записаться, ${rub(sv.p)}</button>`;
 chk();sh.scrollTop=top}
 function book(){if(!ok())return;const sv=SV(S.s),sl=slots(sv,S.m,S.d).find(x=>x.t===S.t);
@@ -143,7 +160,7 @@ const b={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:
 const a=ld();a.push(b);if(!put(a)){S.err='Не удалось сохранить запись. Разрешите браузеру хранить данные и повторите.';sheet();return}
 S.done=b;S.err='';sheet();$('.sheet').focus()}
 let prev=null;
-function openS(id,d,t){prev=document.activeElement;S.done=null;S.err='';S.m='any';S.s=id||S.s||C.services[0].id;S.d=d||(S.d&&days().includes(S.d)?S.d:days()[0]);S.t=t==null?null:t;
+function openS(id,d,t){prev=document.activeElement;S.done=null;S.err='';S.m='any';S.s=id||S.s||C.services[0].id;S.d=d||(S.d&&days().includes(S.d)?S.d:days()[0]);S.t=t==null?null:t;{const x=new Date(S.d+'T00:00');S.vm={y:x.getFullYear(),m:x.getMonth()}}
 S.open=true;$('#sh').classList.add('open');history.pushState({s:1},'');sheet();$('.sheet').focus()}
 function hideS(){S.open=false;$('#sh').classList.remove('open');if(prev&&prev.focus)prev.focus();render()}
 function closeS(){if(history.state&&history.state.s)history.back();else hideS()}
