@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Брикстон</title>
+<meta name="theme-color" content="#161412">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Брикстон">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#161412;--cd:#1f1c19;--ln:#34302b;--tx:#f2ece2;--mu:#a39b8e;--ac:#d9442e;--f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;--sf:ui-serif,Georgia,"Times New Roman",serif}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 var(--f);padding-top:env(safe-area-inset-top);-webkit-text-size-adjust:100%}
+button,input{font-family:var(--f);color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--tx);outline-offset:2px}
+#v{max-width:520px;margin:0 auto;padding:16px 16px calc(100px + env(safe-area-inset-bottom))}
+h1{font:700 42px/1.05 var(--sf);letter-spacing:-.5px}
+h1.pg{font:700 30px/1.1 var(--sf);margin:8px 0 16px}
+h2{font-size:19px;margin:24px 0 10px}
+.mu,small{color:var(--mu);font-size:14px}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:14px;width:100%}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:24px 22px;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;background:radial-gradient(110% 80% at 85% 0,#4a2a1c,transparent 62%),#1b1815;border:1px solid var(--ln)}
+.hero .btn{margin-top:10px}
+.pole{position:absolute;top:22px;right:26px;width:54px;height:170px;border-radius:27px;background:repeating-linear-gradient(160deg,var(--ac) 0 16px,#f2ece2 16px 32px,#274a82 32px 48px);box-shadow:inset -8px 0 14px rgba(0,0,0,.35),0 0 0 4px #2b2622}
+.btn{display:block;border:0;background:var(--ac);color:#fff;font-weight:600;font-size:16px;padding:14px 18px;border-radius:14px;width:100%}
+.btn.g{background:var(--cd);border:1px solid var(--ln);color:var(--tx)}
+.btn.dg{border-color:var(--ac);color:#ff8a76}
+.btn:disabled{opacity:.4;cursor:default}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:12px;padding:12px 0}
+.facts div{display:grid;justify-items:center;gap:2px}
+.facts div+div{border-left:1px solid var(--ln)}
+.facts b{font:700 22px var(--sf)}
+.facts span{color:var(--mu);font-size:13px}
+.next{display:grid;gap:4px;text-align:left}
+.next b{font-size:18px}
+.lst{padding:0;overflow:hidden}
+.lst>*{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;padding:14px}
+.lst>*+*{border-top:1px solid var(--ln)}
+.lst button{background:0;border:0;text-align:left}
+.lst span:first-child{display:grid;gap:2px}
+.pr{font-weight:600;white-space:nowrap}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:496px;margin:0 auto;display:flex;padding:6px;border-radius:24px;background:rgba(36,32,28,.82);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--ln);z-index:5}
+nav button{flex:1;background:0;border:0;color:var(--mu);font-size:12px;font-weight:500;padding:8px 0;border-radius:18px;display:grid;gap:3px;justify-items:center}
+nav button.on{color:var(--tx);background:rgba(255,255,255,.1)}
+nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sh{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.62)}
+.sh.open{display:flex;align-items:flex-end}
+.sheet{width:100%;max-width:520px;margin:0 auto;max-height:92vh;max-height:92dvh;overflow:auto;background:#1a1714;border-radius:26px 26px 0 0;border:1px solid var(--ln);padding:18px 16px calc(18px + env(safe-area-inset-bottom));outline:0;animation:up .25s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.lb{margin:16px 0 8px;font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+.chip{flex:none;border:1px solid var(--ln);background:var(--cd);padding:10px 14px;border-radius:12px;font-size:15px;text-align:left}
+.chip small{display:block;margin-top:2px}
+.chip.on{border-color:var(--ac);background:rgba(217,68,46,.16)}
+.times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.times .chip{text-align:center;padding:10px 0}
+input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);padding:13px;border-radius:12px;font-size:16px;margin-bottom:8px}
+.err{color:#ff8a76;min-height:20px;margin:6px 0}
+.x{background:0;border:0;font-size:20px;padding:8px;color:var(--mu)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.list{display:grid;gap:10px}
+.bk{display:grid;gap:6px}
+.bk.old{opacity:.6}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.acts .btn{padding:11px;font-size:15px}
+.empty{display:grid;gap:8px;text-align:center}
+.note{margin-top:20px;text-align:center}
+</style>
+</head>
+<body>
+<main id="v"></main>
+<nav aria-label="Разделы">
+<button data-t="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg>Главная</button>
+<button data-t="svc" onclick="go('svc')"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>Услуги</button>
+<button data-t="my" onclick="go('my')"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/></svg>Моя запись</button>
+</nav>
+<div class="sh" id="sh" onclick="if(event.target===this)closeS()"><div class="sheet" role="dialog" aria-modal="true" aria-label="Запись" tabindex="-1"></div></div>
+<script>
+const C={name:'Брикстон',tag:'Барбершоп. Стрижки, борода, бритьё.',cur:'₽',step:30,days:14,
+hours:{0:[11,18],1:[10,21],2:[10,21],3:[10,21],4:[10,21],5:[10,21],6:[10,20]},
+services:[{id:'cut',n:'Мужская стрижка',m:60,p:1800},{id:'beard',n:'Борода',m:30,p:1000},{id:'combo',n:'Стрижка и борода',m:90,p:2600},{id:'kid',n:'Детская стрижка',m:45,p:1300},{id:'shave',n:'Королевское бритьё',m:45,p:1500}],
+masters:[{id:'a',n:'Артём'},{id:'d',n:'Даниил'},{id:'m',n:'Максим'}]};
+const $=s=>document.querySelector(s),K='brixton_bookings';
+const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:''};
+const ld=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
+const put=a=>{try{localStorage.setItem(K,JSON.stringify(a));return true}catch(e){return false}};
+const E=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const hm=m=>pad(m/60|0)+':'+pad(m%60);
+const SV=id=>C.services.find(x=>x.id===id)||{n:'Услуга',m:60,p:0};
+const MS=id=>C.masters.find(x=>x.id===id)||{n:'-'};
+const rub=n=>n.toLocaleString('ru-RU')+' '+C.cur;
+const dn=ds=>new Date(ds+'T00:00').toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
+const dch=ds=>{const x=new Date(ds+'T00:00');return x.getDate()+'<small>'+x.toLocaleDateString('ru-RU',{weekday:'short'})+'</small>'};
+const days=()=>{const r=[];for(let i=0;i<C.days;i++){const d=new Date();d.setDate(d.getDate()+i);if(C.hours[d.getDay()])r.push(iso(d))}return r};
+function slots(sv,mid,ds){const h=C.hours[new Date(ds+'T00:00').getDay()];if(!h)return[];
+const bk=ld(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],out=[];
+for(let t=h[0]*60;t+sv.m<=h[1]*60;t+=C.step){if(td&&t<=nm)continue;
+const m=ids.find(i=>!bk.some(b=>b.m===i&&b.d===ds&&t<b.t+b.u&&b.t<t+sv.m));if(m)out.push({t,m})}return out}
+function next(){const sv=C.services[0];for(const d of days()){const s=slots(sv,'any',d);if(s.length)return{d,t:s[0].t}}return null}
+const svcList=()=>`<div class="card lst">${C.services.map(x=>`<button onclick="openS('${x.id}')"><span><b>${E(x.n)}</b><small>${x.m} мин</small></span><span class="pr">${rub(x.p)}</span></button>`).join('')}</div>`;
+function home(){const n=next(),min=Math.min(...C.services.map(x=>x.p));
+const when=n?(n.d===iso(new Date())?'Сегодня':dn(n.d))+', '+hm(n.t):'';
+return `<div class="hero"><div class="pole"></div><h1>${E(C.name)}</h1><p class="mu">${E(C.tag)}</p><button class="btn" onclick="openS()">Записаться</button></div>
+<div class="card facts"><div><b>${C.services.length}</b><span>услуг</span></div><div><b>${C.masters.length}</b><span>мастера</span></div><div><b>${min.toLocaleString('ru-RU')}</b><span>${C.cur}, от</span></div></div>
+<h2>Ближайшее окно</h2>
+${n?`<button class="card next" onclick="openS(null,'${n.d}',${n.t})"><b>${E(when)}</b><span class="mu">Нажмите, чтобы занять это время.</span></button>`:'<div class="card mu">Свободных окон на ближайшие дни нет. Загляните позже.</div>'}
+<h2>Услуги</h2>${svcList()}`}
+function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}<h2>Мастера</h2><div class="card lst">${C.masters.map(x=>`<div><span><b>${E(x.n)}</b></span></div>`).join('')}</div>`}
+function my(){const now=iso(new Date())+hm(new Date().getHours()*60+new Date().getMinutes()),key=b=>b.d+hm(b.t),a=ld().sort((x,y)=>key(x)<key(y)?-1:1),up=a.filter(b=>key(b)>=now),ps=a.filter(b=>key(b)<now).reverse();
+const card=(b,old)=>`<div class="card bk ${old?'old':''}"><div class="row"><b>${E(SV(b.s).n)}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}–${hm(b.t+b.u)}, мастер ${E(MS(b.m).n)}</div>${old?'':`<div class="acts"><button class="btn g" onclick="ics('${b.id}')">В календарь</button><button class="btn g ${S.cx===b.id?'dg':''}" onclick="cancel('${b.id}')">${S.cx===b.id?'Точно отменить?':'Отменить'}</button></div>`}</div>`;
+return `<h1 class="pg">Моя запись</h1>${up.length?`<div class="list">${up.map(b=>card(b)).join('')}</div>`:`<div class="card empty"><b>Записей пока нет</b><span class="mu">Выберите услугу и удобное время.</span><button class="btn" onclick="openS()">Записаться</button></div>`}${ps.length?`<h2>Прошедшие</h2><div class="list">${ps.map(b=>card(b,1)).join('')}</div>`:''}<p class="mu note">Демо-режим: записи хранятся только на этом телефоне.</p>`}
+function render(){$('#v').innerHTML=S.tab==='home'?home():S.tab==='svc'?svc():my();
+document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab))}
+const go=t=>{S.tab=t;S.cx=null;render();scrollTo(0,0)};
+function cancel(id){if(S.cx===id){put(ld().filter(b=>b.id!==id));S.cx=null}else S.cx=id;render()}
+const ok=()=>S.t!=null&&S.n.trim().length>1&&S.p.replace(/\D/g,'').length>=6;
+const chk=()=>{const g=$('#go');if(g)g.disabled=!ok()};
+function pick(k,v){S[k]=v;if(k!=='t')S.t=null;sheet()}
+function sheet(){const sh=$('.sheet'),top=sh.scrollTop;
+if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы записаны</h2><div class="card bk"><div class="row"><b>${E(SV(b.s).n)}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}, мастер ${E(MS(b.m).n)}</div></div><p class="mu" style="margin:12px 0">Запись сохранена на этом телефоне. Добавьте её в календарь, и iPhone напомнит о визите за час.</p><button class="btn" onclick="ics('${b.id}')">Добавить в календарь</button><button class="btn g" style="margin-top:8px" onclick="closeS()">Готово</button>`;return}
+const sv=SV(S.s),sl=slots(sv,S.m,S.d);if(S.t!=null&&!sl.some(x=>x.t===S.t))S.t=null;
+sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
+<p class="lb">Услуга</p><div class="chips">${C.services.map(x=>`<button class="chip ${x.id===S.s?'on':''}" onclick="pick('s','${x.id}')">${E(x.n)}<small>${x.m} мин, ${rub(x.p)}</small></button>`).join('')}</div>
+<p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${E(x.n)}</button>`).join('')}</div>
+<p class="lb">Дата</p><div class="chips">${days().map(d=>`<button class="chip ${d===S.d?'on':''}" onclick="pick('d','${d}')">${dch(d)}</button>`).join('')}</div>
+<p class="lb">Время</p>${sl.length?`<div class="times">${sl.map(x=>`<button class="chip ${x.t===S.t?'on':''}" onclick="pick('t',${x.t})">${hm(x.t)}</button>`).join('')}</div>`:'<p class="mu">На этот день свободных окон нет. Выберите другую дату или мастера.</p>'}
+<p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="tel" placeholder="Телефон" autocomplete="tel" value="${E(S.p)}" oninput="S.p=this.value;chk()">
+<p class="err" role="alert">${E(S.err)}</p><button class="btn" id="go" onclick="book()">Записаться, ${rub(sv.p)}</button>`;
+chk();sh.scrollTop=top}
+function book(){if(!ok())return;const sv=SV(S.s),sl=slots(sv,S.m,S.d).find(x=>x.t===S.t);
+if(!sl){S.err='Это время только что заняли. Выберите другое.';S.t=null;sheet();return}
+const b={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:sv.id,m:sl.m,d:S.d,t:S.t,u:sv.m,p:sv.p,n:S.n.trim(),ph:S.p.trim()};
+const a=ld();a.push(b);if(!put(a)){S.err='Не удалось сохранить запись. Разрешите браузеру хранить данные и повторите.';sheet();return}
+S.done=b;S.err='';sheet();$('.sheet').focus()}
+let prev=null;
+function openS(id,d,t){prev=document.activeElement;S.done=null;S.err='';S.m='any';S.s=id||S.s||C.services[0].id;S.d=d||(S.d&&days().includes(S.d)?S.d:days()[0]);S.t=t==null?null:t;
+S.open=true;$('#sh').classList.add('open');history.pushState({s:1},'');sheet();$('.sheet').focus()}
+function hideS(){S.open=false;$('#sh').classList.remove('open');if(prev&&prev.focus)prev.focus();render()}
+function closeS(){if(history.state&&history.state.s)history.back();else hideS()}
+addEventListener('popstate',()=>{if(S.open)hideS()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&S.open)closeS()});
+function ics(id){const b=ld().find(x=>x.id===id);if(!b)return;
+const dt=(d,m)=>d.replace(/-/g,'')+'T'+pad(m/60|0)+pad(m%60)+'00';
+const t=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Brixton//RU','BEGIN:VEVENT','UID:'+b.id+'@brixton','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','DTSTART:'+dt(b.d,b.t),'DTEND:'+dt(b.d,b.t+b.u),'SUMMARY:'+C.name+': '+SV(b.s).n,'DESCRIPTION:Мастер '+MS(b.m).n,'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:Скоро запись','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/calendar'}));a.download='brixton.ics';document.body.append(a);a.click();a.remove()}
+render();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
