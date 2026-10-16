@@ -2,7 +2,7 @@
 -- 1) ЗАМЕНИТЕ почту владельца на свою (ту, что создадите в Authentication -> Users)
 create or replace function public.is_owner() returns boolean
 language sql stable as $$
-  select coalesce(auth.jwt() ->> 'email','') = 'ВАША_ПОЧТА@example.com'
+  select coalesce(auth.jwt() ->> 'email','') = 'maraquez69@gmail.com'
 $$;
 
 create extension if not exists btree_gist;

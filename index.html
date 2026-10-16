@@ -177,7 +177,7 @@ const r=await fetch(SB.url+path,{method:o.m||'GET',headers:h,body:o.b!==undefine
 if(!r.ok){const e=new Error('http '+r.status);e.status=r.status;try{e.body=await r.json()}catch(_){}throw e}
 const x=await r.text();return x?JSON.parse(x):null}
 async function push(){if(!owner())return;if(pushing){ptm=setTimeout(push,500);return}pushing=1;dirty=0;
-try{await api('/rest/v1/config',{m:'POST',b:{id:1,data:cfgData(),updated_at:new Date().toISOString()},h:{Prefer:'resolution=merge-duplicates,return=minimal'}})}catch(e){dirty=1;note('Не удалось сохранить на сервер. Проверьте связь.')}pushing=0}
+try{await api('/rest/v1/config',{m:'POST',b:{id:1,data:cfgData(),updated_at:new Date().toISOString()},h:{Prefer:'resolution=merge-duplicates,return=minimal'}})}catch(e){dirty=1;note('Не удалось сохранить на сервер: '+(e&&e.status?('ошибка '+e.status+((e.body&&(e.body.message||e.body.error_description||e.body.msg))?' — '+(e.body.message||e.body.error_description||e.body.msg):'')):'нет связи'))}pushing=0}
 function soft(){if(S.open)return;const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&$('#v').contains(a))return;render()}
 let syncing=0;
 async function sync(){if(!ON()||syncing)return;syncing=1;
