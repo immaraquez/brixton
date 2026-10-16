@@ -128,6 +128,7 @@ select{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);
 .sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .sum .card{display:grid;gap:2px;padding:12px}
 .sum b{font:700 21px var(--sf)}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(92px + env(safe-area-inset-bottom));max-width:488px;margin:0 auto;background:#4a2c17;color:#FFFAEA;padding:12px 14px;border-radius:12px;z-index:30;font-size:14px;text-align:center}
 </style>
 </head>
 <body>
@@ -146,16 +147,52 @@ services:[{id:'cut',n:'Мужская стрижка',m:60,p:1800},{id:'beard',n
 masters:[{id:'a',n:'Артём',r:'Топ Барбер'},{id:'d',n:'Валерий',r:'Барбер'},{id:'m',n:'Максим',r:'Стажёр'}]};
 const $=s=>document.querySelector(s),K='brixton_bookings';
 const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:'',vm:null};
-try{const c=JSON.parse(localStorage.getItem('brixton_cfg')||'null');if(c&&c.services&&c.services.length&&c.masters&&c.masters.length&&c.hours&&Object.keys(c.hours).length){C.services=c.services;C.masters=c.masters;C.hours=c.hours}}catch(e){}
+/* ===== SUPABASE: вставьте сюда Project URL и anon/publishable key (Project Settings -> API) ===== */
+const SB={url:'PASTE_SUPABASE_URL',key:'PASTE_SUPABASE_ANON_KEY'};
+const ON=()=>/^https:\/\//.test(SB.url)&&SB.key.length>20;
+const lsg=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
+const lss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+function applyCfg(c){if(c&&c.services&&c.services.length&&c.masters&&c.masters.length&&c.hours&&Object.keys(c.hours).length){C.services=c.services;C.masters=c.masters;C.hours=c.hours;C.masters.forEach(m=>{if(!m.r)m.r='Барбер'});return true}return false}
+applyCfg(lsg('brixton_cfg','null'));
 C.masters.forEach(m=>{if(!m.r)m.r='Барбер'});
-const sc=()=>{try{localStorage.setItem('brixton_cfg',JSON.stringify({services:C.services,masters:C.masters,hours:C.hours}))}catch(e){}};
-const ld=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
-const put=a=>{try{localStorage.setItem(K,JSON.stringify(a));return true}catch(e){return false}};
+let BUSY=lsg('brixton_busy','[]'),ALL=lsg('brixton_all','[]'),dirty=0,pushing=0,ptm=null,ntm=null;
+const mine=()=>lsg(K,'[]');
+const put=a=>lss(K,a);
+const owner=()=>ON()&&S.ow;
+const ld=()=>owner()?ALL:mine();
+const lset=a=>{if(owner()){ALL=a;lss('brixton_all',a);return true}return put(a)};
+const busyAll=()=>owner()?ALL:BUSY.concat(mine());
+const cfgData=()=>({services:C.services,masters:C.masters,hours:C.hours});
+const sc=()=>{lss('brixton_cfg',cfgData());if(owner()){dirty=1;clearTimeout(ptm);ptm=setTimeout(push,500)}};
+function note(t){let e=document.getElementById('toast');if(!e){e=document.createElement('div');e.id='toast';e.className='toast';e.setAttribute('role','status');document.body.append(e)}e.textContent=t;e.style.display='';clearTimeout(ntm);ntm=setTimeout(()=>{e.style.display='none'},4000)}
+const sess=()=>lsg('brixton_sess','null');
+const saveSess=j=>lss('brixton_sess',{a:j.access_token,r:j.refresh_token,e:Date.now()/1000+(j.expires_in||3600)});
+function dropSess(){try{localStorage.removeItem('brixton_sess')}catch(e){}S.ow=false;ALL=[]}
+async function tok(){const s=sess();if(!s)return null;if(s.e-Date.now()/1000>60)return s.a;
+try{const r=await fetch(SB.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:s.r})});
+if(r.ok){const j=await r.json();saveSess(j);return j.access_token}
+if(r.status>=400&&r.status<500){dropSess();return null}}catch(e){}return s.a}
+async function api(path,o){o=o||{};const t=await tok(),h=Object.assign({apikey:SB.key,'Content-Type':'application/json'},o.h||{});if(t)h.Authorization='Bearer '+t;
+const r=await fetch(SB.url+path,{method:o.m||'GET',headers:h,body:o.b!==undefined?JSON.stringify(o.b):undefined});
+if(!r.ok){const e=new Error('http '+r.status);e.status=r.status;try{e.body=await r.json()}catch(_){}throw e}
+const x=await r.text();return x?JSON.parse(x):null}
+async function push(){if(!owner())return;if(pushing){ptm=setTimeout(push,500);return}pushing=1;dirty=0;
+try{await api('/rest/v1/config',{m:'POST',b:{id:1,data:cfgData(),updated_at:new Date().toISOString()},h:{Prefer:'resolution=merge-duplicates,return=minimal'}})}catch(e){dirty=1;note('Не удалось сохранить на сервер. Проверьте связь.')}pushing=0}
+function soft(){if(S.open)return;const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName)&&$('#v').contains(a))return;render()}
+let syncing=0;
+async function sync(){if(!ON()||syncing)return;syncing=1;
+try{const cf=await api('/rest/v1/config?id=eq.1&select=data');
+if(cf&&cf[0]){const d=cf[0].data;if(d&&d.services){if(!dirty&&!pushing&&applyCfg(d))lss('brixton_cfg',cfgData())}else if(owner())dirty=1}
+BUSY=(await api('/rest/v1/rpc/busy',{m:'POST',b:{from_date:iso(new Date())}}))||[];lss('brixton_busy',BUSY);
+if(owner()){ALL=(await api('/rest/v1/bookings?select=*&order=d.asc,t.asc'))||[];lss('brixton_all',ALL)}
+else{const a=mine();if(a.length){const r=await api('/rest/v1/rpc/my_bookings',{m:'POST',b:{ids:a.map(x=>x.id)}});if(Array.isArray(r))put(r)}}
+if(dirty&&owner())push();
+soft()}catch(e){}syncing=0}
 const E=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 S.os='rec';S.mg='svc';S.bd=null;S.le='';S.me='';S.gm=null;S.gv=null;S.gd=null;{const n=new Date();S.ra=S.rb=iso(n);S.pa=iso(new Date(n.getFullYear(),n.getMonth(),1));S.pb=iso(new Date(n.getFullYear(),n.getMonth()+1,0));S.pm='all'}
-try{S.ow=localStorage.getItem('brixton_owner')==='1'}catch(e){S.ow=false}
+try{S.ow=ON()?!!sess():localStorage.getItem('brixton_owner')==='1'}catch(e){S.ow=false}
 const hm=m=>pad(m/60|0)+':'+pad(m%60);
 const SV=id=>C.services.find(x=>x.id===id)||{n:'Услуга',m:60,p:0};
 const MS=id=>C.masters.find(x=>x.id===id)||{n:'-'};
@@ -171,7 +208,7 @@ const sv=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect wi
 return 'data:image/svg+xml;utf8,'+encodeURIComponent(sv)};
 const av=(x,l,s)=>{const i=Math.max(0,C.masters.indexOf(x));return `<span class="av ${l?'l':''} ${s?'s':''}"><img alt="${E(x.n||'')}" src="${E(x.pic||portrait(i))}"></span>`};
 const mcards=()=>`<h2>Мастера</h2><div class="mcs">${C.masters.map((x,i)=>`<div class="card mcd"><div class="ph"><img alt="${E(x.n)}" src="${E(x.pic||portrait(i))}"></div><b>${E(x.n)}</b><em class="rl">${E(x.r||'Барбер')}</em></div>`).join('')}</div>`;
-function slots(sv,mid,ds){const bk=ld(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],o={};
+function slots(sv,mid,ds){const bk=busyAll(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],o={};
 for(const i of ids){const h=mh(i,ds);if(!h)continue;
 for(let x=h[0]*60;x+sv.m<=h[1]*60;x+=C.step){if((td&&x<=nm)||o[x]!=null)continue;
 if(!bk.some(b=>b.m===i&&b.d===ds&&x<b.t+b.u&&b.t<x+sv.m))o[x]=i}}
@@ -188,20 +225,24 @@ ${n?`<button class="card next" onclick="openS(null,'${n.d}',${n.t})"><b>${E(when
 function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}${mcards()}`}
 function my(){const now=iso(new Date())+hm(new Date().getHours()*60+new Date().getMinutes()),key=b=>b.d+hm(b.t),a=ld().sort((x,y)=>key(x)<key(y)?-1:1),up=a.filter(b=>key(b)>=now),ps=a.filter(b=>key(b)<now).reverse();
 const card=(b,old)=>`<div class="card bk ${old?'old':''}"><div class="row"><b>${E(bn(b))}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}–${hm(b.t+b.u)}, мастер ${E(bm(b))}</div>${old?'':`<div class="acts"><button class="btn g" onclick="ics('${b.id}')">В календарь</button><button class="btn g ${S.cx===b.id?'dg':''}" onclick="cancel('${b.id}')">${S.cx===b.id?'Точно отменить?':'Отменить'}</button></div>`}</div>`;
-return `<h1 class="pg">Моя запись</h1>${up.length?`<div class="list">${up.map(b=>card(b)).join('')}</div>`:`<div class="card empty"><b>Записей пока нет</b><span class="mu">Выберите услугу и удобное время.</span><button class="btn" onclick="openS()">Записаться</button></div>`}${ps.length?`<h2>Прошедшие</h2><div class="list">${ps.map(b=>card(b,1)).join('')}</div>`:''}<p class="mu note">Демо-режим: записи хранятся только на этом телефоне.</p>`}
+return `<h1 class="pg">Моя запись</h1>${up.length?`<div class="list">${up.map(b=>card(b)).join('')}</div>`:`<div class="card empty"><b>Записей пока нет</b><span class="mu">Выберите услугу и удобное время.</span><button class="btn" onclick="openS()">Записаться</button></div>`}${ps.length?`<h2>Прошедшие</h2><div class="list">${ps.map(b=>card(b,1)).join('')}</div>`:''}<p class="mu note">${ON()?'Записи хранятся на сервере барбершопа.':'Демо-режим: записи хранятся только на этом телефоне.'}</p>`}
 function render(){$('#v').innerHTML=S.tab==='home'?home():S.tab==='svc'?svc():S.tab==='own'?ownV():my();$('nav').style.display=S.tab==='own'?'none':'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab))}
 const go=t=>{S.tab=t;S.cx=null;render();scrollTo(0,0)};
-function cancel(id){if(S.cx===id){put(ld().filter(b=>b.id!==id));S.cx=null}else S.cx=id;render()}
+function cancel(id){if(S.cx===id){const a=mine(),b=a.find(x=>x.id===id);put(a.filter(x=>x.id!==id));if(b)BUSY=BUSY.filter(x=>!(x.m===b.m&&x.d===b.d&&x.t===b.t));S.cx=null;
+if(ON()&&b)api('/rest/v1/rpc/cancel_booking',{m:'POST',b:{bid:id}}).catch(()=>{const c=mine();c.push(b);put(c);BUSY.push({m:b.m,d:b.d,t:b.t,u:b.u});note('Нет связи: запись не отменена. Повторите позже.');render()})}else S.cx=id;render()}
 const ok=()=>S.t!=null&&S.n.trim().length>1&&/^\+7 \([3-9]\d{2}\) \d{3}-\d{2}-\d{2}$/.test(S.p);
 const chk=()=>{const g=$('#go');if(g)g.disabled=!ok()};
 const OWN={u:'admin',p:'admin'};
 function own(){S.tab='own';S.cx=null;render();scrollTo(0,0)}
-function login(){const u=$('#lu').value.trim(),p=$('#lp').value;if(u===OWN.u&&p===OWN.p){S.ow=true;S.le='';try{localStorage.setItem('brixton_owner','1')}catch(e){}}else S.le='Неверный логин или пароль.';render()}
-function logout(){S.ow=false;try{localStorage.removeItem('brixton_owner')}catch(e){}go('home')}
+async function login(){const u=$('#lu').value.trim(),p=$('#lp').value;
+if(ON()){try{const r=await fetch(SB.url+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({email:u,password:p})});const j=await r.json();
+if(!r.ok||!j.access_token)throw 0;saveSess(j);S.ow=true;S.le='';await sync()}catch(e){S.le='Неверная почта или пароль.'}render();return}
+if(u===OWN.u&&p===OWN.p){S.ow=true;S.le='';try{localStorage.setItem('brixton_owner','1')}catch(e){}}else S.le='Неверный логин или пароль.';render()}
+function logout(){if(ON())dropSess();else{S.ow=false;try{localStorage.removeItem('brixton_owner')}catch(e){}}go('home')}
 const ot=k=>{S.os=k;S.cx=null;S.me='';render()};
 function ownV(){
-if(!S.ow)return `<button class="back" onclick="go('home')">‹ На главную</button><div class="card lg"><h1 class="pg">Вход для владельца</h1><input id="lu" placeholder="Логин" autocomplete="username" autocapitalize="none"><input id="lp" type="password" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><p class="err" role="alert">${E(S.le)}</p><button class="btn" onclick="login()">Войти</button><p class="mu note">Тестовый вход: admin / admin</p></div>`;
+if(!S.ow)return `<button class="back" onclick="go('home')">‹ На главную</button><div class="card lg"><h1 class="pg">Вход для владельца</h1><input id="lu" ${ON()?'type="email" ':''}placeholder="${ON()?'Почта':'Логин'}" autocomplete="username" autocapitalize="none"><input id="lp" type="password" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><p class="err" role="alert">${E(S.le)}</p><button class="btn" onclick="login()">Войти</button>${ON()?'':'<p class="mu note">Тестовый вход: admin / admin</p>'}</div>`;
 const tabs=[['mng','Управление'],['rec','Записи'],['rep','Отчётность']];
 return `<div class="row"><button class="back" onclick="go('home')">‹ На главную</button><button class="back" onclick="logout()">Выйти</button></div><div class="chips">${tabs.map(([k,n])=>`<button class="chip ${S.os===k?'on':''}" onclick="ot('${k}')">${n}</button>`).join('')}</div>${S.os==='mng'?omng():S.os==='rep'?orep():orec()}`}
 const key=r=>r.d+hm(r.t);
@@ -248,8 +289,8 @@ const dd=r.st==='done';
 sh.innerHTML=`<div class="row"><h2 style="margin:0">${E(r.n)}</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
 <div class="card bk" style="margin-top:12px"><div class="row"><b>${E(bn(r))}</b><span class="pr">${rub(r.p)}</span></div><span class="mu">${dd?'Выполнена':'Подтверждена'}</span><span>${dn(r.d)}, ${hm(r.t)}–${hm(r.t+r.u)}</span><span class="mu">Мастер ${E(bm(r))}</span><a href="tel:+${r.ph.replace(/\D/g,'')}" style="color:var(--tx)">${E(r.ph)}</a></div>
 ${dd?'':`<button class="btn" style="margin-top:12px" onclick="od1('${r.id}')">Отметить выполненной</button>`}<button class="btn g ${S.cx===r.id?'dg':''}" style="margin-top:8px" onclick="oc('${r.id}')">${S.cx===r.id?'Точно отменить запись?':'Отменить запись'}</button>`}
-function od1(id){const a=ld(),r=a.find(x=>x.id===id);if(r){r.st='done';put(a)}sheet()}
-function oc(id){if(S.cx===id){put(ld().filter(x=>x.id!==id));S.cx=null;closeS()}else{S.cx=id;sheet()}}
+function od1(id){const a=ld().slice(),r=a.find(x=>x.id===id);if(r){r.st='done';lset(a);if(owner())api('/rest/v1/bookings?id=eq.'+encodeURIComponent(id),{m:'PATCH',b:{st:'done'},h:{Prefer:'return=minimal'}}).catch(()=>note('Не удалось сохранить на сервер.'))}sheet()}
+function oc(id){if(S.cx===id){lset(ld().filter(x=>x.id!==id));if(owner())api('/rest/v1/bookings?id=eq.'+encodeURIComponent(id),{m:'DELETE'}).catch(()=>note('Не удалось удалить на сервере.'));S.cx=null;closeS()}else{S.cx=id;sheet()}}
 function osvc(){return `<div class="list" style="margin-top:12px">${C.services.map(x=>`<div class="card ed"><input aria-label="Название" value="${E(x.n)}" onchange="se('${x.id}','n',this.value)"><div class="two"><label>Минут<input type="number" inputmode="numeric" min="15" step="15" value="${x.m}" onchange="se('${x.id}','m',this.value)"></label><label>Цена, ${C.cur}<input type="number" inputmode="numeric" min="0" value="${x.p}" onchange="se('${x.id}','p',this.value)"></label></div>${C.services.length>1?`<button class="btn g ${S.cx===x.id?'dg':''}" onclick="sx('${x.id}')">${S.cx===x.id?'Точно удалить?':'Удалить услугу'}</button>`:''}</div>`).join('')}</div><button class="btn" style="margin-top:12px" onclick="sa()">Добавить услугу</button><p class="mu note">Цена в уже сделанных записях не меняется.</p>`}
 function se(id,k,v){const x=C.services.find(s=>s.id===id);if(!x)return;let good=false;
 if(k==='n'){v=v.trim();if(v){x.n=v;good=true}}else{v=Math.round(+v);if(k==='m'&&v>=15){x.m=v;good=true}if(k==='p'&&v>=0){x.p=v;good=true}}
@@ -283,7 +324,7 @@ function ph(el){S.p=fp(el.value);el.value=S.p;chk()}
 function pick(k,v){S[k]=v;if(k!=='t')S.t=null;sheet()}
 function sheet(){const sh=$('.sheet'),top=sh.scrollTop;
 if(S.bd){bsheet(sh);return}
-if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы записаны</h2><div class="card bk"><div class="row"><b>${E(bn(b))}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}, мастер ${E(bm(b))}</div></div><p class="mu" style="margin:12px 0">Запись сохранена на этом телефоне. Добавьте её в календарь, и iPhone напомнит о визите за час.</p><button class="btn" onclick="ics('${b.id}')">Добавить в календарь</button><button class="btn g" style="margin-top:8px" onclick="closeS()">Готово</button>`;return}
+if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы записаны</h2><div class="card bk"><div class="row"><b>${E(bn(b))}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}, мастер ${E(bm(b))}</div></div><p class="mu" style="margin:12px 0">${ON()?'Запись сохранена.':'Запись сохранена на этом телефоне.'} Добавьте её в календарь, и iPhone напомнит о визите за час.</p><button class="btn" onclick="ics('${b.id}')">Добавить в календарь</button><button class="btn g" style="margin-top:8px" onclick="closeS()">Готово</button>`;return}
 const sv=SV(S.s),sl=slots(sv,S.m,S.d);if(S.t!=null&&!sl.some(x=>x.t===S.t))S.t=null;
 sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
 <p class="lb">Услуга</p><div class="chips">${C.services.map(x=>`<button class="chip ${x.id===S.s?'on':''}" onclick="pick('s','${x.id}')">${E(x.n)}<small>${x.m} мин, ${rub(x.p)}</small></button>`).join('')}</div>
@@ -293,10 +334,17 @@ sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button cla
 <p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="numeric" placeholder="+7 (___) ___-__-__" autocomplete="tel-national" value="${E(S.p)}" oninput="ph(this)"><small>Номер из 11 цифр, например +7 (912) 345-67-89</small>
 <p class="err" role="alert">${E(S.err)}</p><button class="btn" id="go" onclick="book()">Записаться, ${rub(sv.p)}</button>`;
 chk();sh.scrollTop=top}
-function book(){if(!ok())return;const sv=SV(S.s),sl=slots(sv,S.m,S.d).find(x=>x.t===S.t);
+const uid=()=>(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+async function book(){if(!ok()||S.busy)return;const sv=SV(S.s),sl=slots(sv,S.m,S.d).find(x=>x.t===S.t);
 if(!sl){S.err='Это время только что заняли. Выберите другое.';S.t=null;sheet();return}
-const b={id:'b'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),s:sv.id,m:sl.m,d:S.d,t:S.t,u:sv.m,p:sv.p,sn:sv.n,mn:MS(sl.m).n,n:S.n.trim(),ph:S.p.trim()};
-const a=ld();a.push(b);if(!put(a)){S.err='Не удалось сохранить запись. Разрешите браузеру хранить данные и повторите.';sheet();return}
+const b={id:uid(),s:sv.id,m:sl.m,d:S.d,t:S.t,u:sv.m,p:sv.p,sn:sv.n,mn:MS(sl.m).n,n:S.n.trim(),ph:S.p.trim()};
+if(ON()){S.busy=1;const g=$('#go');if(g){g.disabled=true;g.textContent='Сохраняем...'}
+try{await api('/rest/v1/bookings',{m:'POST',b:b,h:{Prefer:'return=minimal'}})}catch(e){S.busy=0;
+if(e.status===409||(e.body&&e.body.code==='23P01')){S.err='Это время только что заняли. Выберите другое.';S.t=null;await sync()}else S.err='Нет связи с сервером. Попробуйте ещё раз.';sheet();return}
+S.busy=0;BUSY.push({m:b.m,d:b.d,t:b.t,u:b.u});lss('brixton_busy',BUSY);
+if(owner()){ALL=ALL.concat(Object.assign({st:'ok'},b));lss('brixton_all',ALL)}else{const a=mine();a.push(b);put(a)}
+S.done=b;S.err='';sheet();$('.sheet').focus();return}
+const a=mine();a.push(b);if(!put(a)){S.err='Не удалось сохранить запись. Разрешите браузеру хранить данные и повторите.';sheet();return}
 S.done=b;S.err='';sheet();$('.sheet').focus()}
 let prev=null;
 function openS(id,d,t){prev=document.activeElement;S.bd=null;S.done=null;S.err='';S.m='any';S.s=id||S.s;if(!C.services.some(x=>x.id===S.s))S.s=C.services[0].id;S.d=d||(S.d&&days().includes(S.d)?S.d:days()[0]);S.t=t==null?null:t;{const x=new Date(S.d+'T00:00');S.vm={y:x.getFullYear(),m:x.getMonth()}}
@@ -310,6 +358,7 @@ const dt=(d,m)=>d.replace(/-/g,'')+'T'+pad(m/60|0)+pad(m%60)+'00';
 const t=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Brixton//RU','BEGIN:VEVENT','UID:'+b.id+'@brixton','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','DTSTART:'+dt(b.d,b.t),'DTEND:'+dt(b.d,b.t+b.u),'SUMMARY:'+C.name+': '+bn(b),'DESCRIPTION:Мастер '+bm(b),'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY','DESCRIPTION:Скоро запись','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/calendar'}));a.download='brixton.ics';document.body.append(a);a.click();a.remove()}
 render();
+if(ON()){sync();setInterval(()=>{if(!document.hidden)sync()},30000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});addEventListener('online',sync)}
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 </script>
 </body>
