@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Брикстон</title>
-<meta name="theme-color" content="#161412">
+<meta name="theme-color" content="#FFFAEA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Брикстон">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <style>
-:root{--bg:#161412;--cd:#1f1c19;--ln:#34302b;--tx:#f2ece2;--mu:#a39b8e;--ac:#d9442e;--f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;--sf:ui-serif,Georgia,"Times New Roman",serif}
+:root{--bg:#FFFAEA;--cd:#FFFEF9;--ln:#e6d6b8;--tx:#4a2c17;--mu:#8b6b50;--ac:#7C4F2E;--dg:#b3402a;--cf:#7C4F2E;--bg2:#FFFAEA;--f:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;--sf:ui-serif,Georgia,"Times New Roman",serif}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg)}
 body{background:var(--bg);color:var(--tx);font:16px/1.4 var(--f);padding-top:env(safe-area-inset-top);-webkit-text-size-adjust:100%}
@@ -25,14 +25,17 @@ h1{font:700 42px/1.05 var(--sf);letter-spacing:-.5px}
 h1.pg{font:700 30px/1.1 var(--sf);margin:8px 0 16px}
 h2{font-size:19px;margin:24px 0 10px}
 .mu,small{color:var(--mu);font-size:14px}
-.card{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:14px;width:100%}
-.hero{position:relative;overflow:hidden;border-radius:28px;padding:24px 22px;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;background:radial-gradient(110% 80% at 85% 0,#4a2a1c,transparent 62%),#1b1815;border:1px solid var(--ln)}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:14px;width:100%;box-shadow:0 1px 3px rgba(90,55,25,.07)}
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:24px 22px;min-height:300px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;background:radial-gradient(110% 80% at 85% 0,#9a6840,transparent 62%),#7C4F2E;border:0;color:#FFFAEA;box-shadow:0 10px 28px rgba(90,55,25,.25)}
+.hero p.mu{color:rgba(255,250,234,.8)}
+.hero .btn{background:#FFFAEA;color:#7C4F2E}
 .hero .btn{margin-top:10px}
-.pole{position:absolute;top:22px;right:26px;width:54px;height:170px;border-radius:27px;background:repeating-linear-gradient(160deg,var(--ac) 0 16px,#f2ece2 16px 32px,#274a82 32px 48px);box-shadow:inset -8px 0 14px rgba(0,0,0,.35),0 0 0 4px #2b2622}
+.pole{position:absolute;top:22px;right:26px;width:54px;height:170px;border-radius:27px;background:repeating-linear-gradient(160deg,#FFFAEA 0 16px,#c9a27a 16px 32px,#3b2415 32px 48px);box-shadow:inset -8px 0 14px rgba(0,0,0,.3),0 0 0 4px #5e3b22}
 .btn{display:block;border:0;background:var(--ac);color:#fff;font-weight:600;font-size:16px;padding:14px 18px;border-radius:14px;width:100%}
 .btn.g{background:var(--cd);border:1px solid var(--ln);color:var(--tx)}
-.btn.dg{border-color:var(--ac);color:#ff8a76}
+.btn.dg{border-color:var(--dg);color:var(--dg)}
 .btn:disabled{opacity:.4;cursor:default}
+.btn.g{box-shadow:0 1px 2px rgba(90,55,25,.06)}
 .facts{display:grid;grid-template-columns:repeat(3,1fr);margin-top:12px;padding:12px 0}
 .facts div{display:grid;justify-items:center;gap:2px}
 .facts div+div{border-left:1px solid var(--ln)}
@@ -46,24 +49,24 @@ h2{font-size:19px;margin:24px 0 10px}
 .lst button{background:0;border:0;text-align:left}
 .lst span:first-child{display:grid;gap:2px}
 .pr{font-weight:600;white-space:nowrap}
-nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:496px;margin:0 auto;display:flex;padding:6px;border-radius:24px;background:rgba(36,32,28,.82);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--ln);z-index:5}
+nav{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:496px;margin:0 auto;display:flex;padding:6px;border-radius:24px;background:rgba(255,250,234,.88);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);border:1px solid var(--ln);z-index:5}
 nav button{flex:1;background:0;border:0;color:var(--mu);font-size:12px;font-weight:500;padding:8px 0;border-radius:18px;display:grid;gap:3px;justify-items:center}
-nav button.on{color:var(--tx);background:rgba(255,255,255,.1)}
+nav button.on{color:#fff;background:var(--ac)}
 nav svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sh{position:fixed;inset:0;z-index:10;display:none;background:rgba(0,0,0,.62)}
+.sh{position:fixed;inset:0;z-index:10;display:none;background:rgba(60,35,18,.5)}
 .sh.open{display:flex;align-items:flex-end}
-.sheet{width:100%;max-width:520px;margin:0 auto;max-height:92vh;max-height:92dvh;overflow:auto;background:#1a1714;border-radius:26px 26px 0 0;border:1px solid var(--ln);padding:18px 16px calc(18px + env(safe-area-inset-bottom));outline:0;animation:up .25s ease}
+.sheet{width:100%;max-width:520px;margin:0 auto;max-height:92vh;max-height:92dvh;overflow:auto;background:#FFFAEA;border-radius:26px 26px 0 0;border:1px solid var(--ln);padding:18px 16px calc(18px + env(safe-area-inset-bottom));outline:0;animation:up .25s ease}
 @keyframes up{from{transform:translateY(40px);opacity:0}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .lb{margin:16px 0 8px;font-weight:600}
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
 .chip{flex:none;border:1px solid var(--ln);background:var(--cd);padding:10px 14px;border-radius:12px;font-size:15px;text-align:left}
 .chip small{display:block;margin-top:2px}
-.chip.on{border-color:var(--ac);background:rgba(217,68,46,.16)}
+.chip.on{border-color:var(--ac);background:rgba(124,79,46,.14);font-weight:600}
 .times{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .times .chip{text-align:center;padding:10px 0}
 input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);padding:13px;border-radius:12px;font-size:16px;margin-bottom:8px}
-.err{color:#ff8a76;min-height:20px;margin:6px 0}
+.err{color:var(--dg);min-height:20px;margin:6px 0}
 .x{background:0;border:0;font-size:20px;padding:8px;color:var(--mu)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .list{display:grid;gap:10px}
@@ -80,8 +83,8 @@ input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);p
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
 .cal .wd{color:var(--mu);font-size:12px;padding:4px 0}
 .dy{aspect-ratio:1;border:1px solid transparent;background:var(--cd);border-radius:12px;font-size:15px}
-.dy.on{border-color:var(--ac);background:rgba(217,68,46,.16)}
-.dy:disabled{background:0;color:#5a544c;cursor:default}
+.dy.on{border-color:var(--ac);background:var(--ac);color:#fff}
+.dy:disabled{background:0;color:#cbb99a;cursor:default}
 input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
 .hd{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
 .ic{width:42px;height:42px;flex:none;border-radius:50%;background:var(--cd);border:1px solid var(--ln);display:grid;place-items:center;color:var(--tx);font-size:20px}
@@ -94,7 +97,7 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
 .dn{display:flex;gap:8px;align-items:center;margin:12px 0}
 .rw{display:grid;gap:3px;text-align:left}
 .bd{font-style:normal;font-size:12px;color:var(--mu)}
-.bd.ok{color:#7fd18b}
+.bd.ok{color:#3f7d4a}
 .ed{display:grid;gap:10px}
 .ed input{margin:0}
 .ed label{display:grid;gap:4px;color:var(--mu);font-size:13px}
@@ -103,15 +106,24 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
 .lg input{margin-bottom:8px}
 .adr{display:flex;gap:6px;align-items:flex-start;color:var(--mu);font-size:13px;line-height:1.3}
 .adr svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8}
-input,select{color-scheme:dark}
+input,select{color-scheme:light}
 select{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);padding:13px;border-radius:12px;font-size:16px;color:var(--tx);font-family:var(--f)}
 .av{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--ln);color:var(--mu);font:700 20px var(--sf);overflow:hidden}
 .av.l{width:76px;height:76px;font-size:30px}
 .av img{width:100%;height:100%;object-fit:cover}
+.av.s{width:36px;height:36px;font-size:15px}
+.chip.mc{display:flex;gap:10px;align-items:center;padding:8px 14px 8px 8px}
+.chip.mc>span:last-child{display:grid}
+.mcs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mcd{display:grid;gap:8px;justify-items:center;text-align:center;padding:12px 6px}
+.mcd .ph{width:100%;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--ln)}
+.mcd .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.mcd b{font-size:15px}
+.mcd .rl{font-size:11px;padding:1px 8px}
 .mrow{display:flex;gap:12px;align-items:center}
-.rl{font-style:normal;width:fit-content;font-size:12px;color:#ff8a76;border:1px solid var(--ac);border-radius:20px;padding:1px 9px}
-.cal .dy.w{background:rgba(127,209,139,.14)}
-.cal .dy.off{color:#7a5a52;background:0;border-color:var(--ln)}
+.rl{font-style:normal;width:fit-content;font-size:12px;color:var(--ac);border:1px solid var(--ac);border-radius:20px;padding:1px 9px}
+.cal .dy.w{background:rgba(63,125,74,.14)}
+.cal .dy.off{color:#b08a78;background:0;border-color:var(--ln)}
 .up{text-align:center;cursor:pointer}
 .sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
 .sum .card{display:grid;gap:2px;padding:12px}
@@ -131,7 +143,7 @@ const ROLES=['Топ Барбер','Барбер','Стажёр'],ADDR='г. Бе
 const C={name:'Брикстон',tag:'Барбершоп. Стрижки, борода, бритьё.',cur:'₽',step:30,days:60,
 hours:{0:[11,18],1:[10,21],2:[10,21],3:[10,21],4:[10,21],5:[10,21],6:[10,20]},
 services:[{id:'cut',n:'Мужская стрижка',m:60,p:1800},{id:'beard',n:'Борода',m:30,p:1000},{id:'combo',n:'Стрижка и борода',m:90,p:2600},{id:'kid',n:'Детская стрижка',m:45,p:1300},{id:'shave',n:'Королевское бритьё',m:45,p:1500}],
-masters:[{id:'a',n:'Артём',r:'Топ Барбер'},{id:'d',n:'Даниил',r:'Барбер'},{id:'m',n:'Максим',r:'Стажёр'}]};
+masters:[{id:'a',n:'Артём',r:'Топ Барбер'},{id:'d',n:'Валерий',r:'Барбер'},{id:'m',n:'Максим',r:'Стажёр'}]};
 const $=s=>document.querySelector(s),K='brixton_bookings';
 const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:'',vm:null};
 try{const c=JSON.parse(localStorage.getItem('brixton_cfg')||'null');if(c&&c.services&&c.services.length&&c.masters&&c.masters.length&&c.hours&&Object.keys(c.hours).length){C.services=c.services;C.masters=c.masters;C.hours=c.hours}}catch(e){}
@@ -153,7 +165,12 @@ const dn=ds=>new Date(ds+'T00:00').toLocaleDateString('ru-RU',{weekday:'short',d
 const dch=ds=>{const x=new Date(ds+'T00:00');return x.getDate()+'<small>'+x.toLocaleDateString('ru-RU',{weekday:'short'})+'</small>'};
 const mh=(id,ds)=>{const m=MS(id);if(m.sch&&ds in m.sch)return m.sch[ds];return C.hours[new Date(ds+'T00:00').getDay()]||null};
 const days=()=>{const r=[];for(let i=0;i<C.days;i++){const d=new Date();d.setDate(d.getDate()+i);const s=iso(d);if(C.masters.some(m=>mh(m.id,s)))r.push(s)}return r.length?r:[iso(new Date())]};
-const av=(x,l)=>`<span class="av ${l?'l':''}">${x.pic?`<img alt="" src="${E(x.pic)}">`:E((x.n||'?').trim().charAt(0).toUpperCase())}</span>`;
+const PT=[{k:'#e8b894',h:'#2b1a10',st:'short',b:1},{k:'#d9a37c',h:'#1c1410',st:'slick',m:1},{k:'#f0c8a6',h:'#6b4426',st:'curly',g:1}];
+const portrait=i=>{const p=PT[i%PT.length],hs=p.st==='short'?`<path d="M61 82Q58 36 100 35Q142 36 139 82Q131 58 100 58Q69 58 61 82Z" fill="${p.h}"/>`:p.st==='slick'?`<path d="M60 84Q54 32 104 32Q148 34 140 84Q134 56 112 50Q80 50 60 84Z" fill="${p.h}"/><path d="M104 33Q96 46 84 52" stroke="#fff" stroke-opacity=".25" stroke-width="2" fill="none"/>`:[[66,58],[82,44],[102,40],[122,44],[138,58],[62,74],[140,76]].map(c=>`<circle cx="${c[0]}" cy="${c[1]}" r="17" fill="${p.h}"/>`).join('');
+const sv=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ead9b8"/><path d="M14 200Q22 148 100 144Q178 148 186 200Z" fill="#7C4F2E"/><path d="M84 146L100 172L116 146Z" fill="#FFFAEA"/><rect x="84" y="116" width="32" height="34" rx="10" fill="${p.k}"/><rect x="84" y="128" width="32" height="12" fill="#000" opacity=".12"/><circle cx="62" cy="90" r="8" fill="${p.k}"/><circle cx="138" cy="90" r="8" fill="${p.k}"/><ellipse cx="100" cy="86" rx="38" ry="46" fill="${p.k}"/>${p.b?`<path d="M62 90Q64 144 100 146Q136 144 138 90Q130 122 100 122Q70 122 62 90Z" fill="${p.h}"/>`:''}${hs}${p.m?`<path d="M80 110Q100 100 120 110Q100 118 80 110Z" fill="${p.h}"/>`:''}<path d="M76 78Q86 73 94 77M106 77Q114 73 124 78" stroke="${p.h==='#6b4426'?'#4a2f18':p.h}" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="86" cy="88" r="3.4" fill="#2b1a10"/><circle cx="114" cy="88" r="3.4" fill="#2b1a10"/>${p.g?'<circle cx="86" cy="88" r="11" fill="none" stroke="#2b1a10" stroke-width="2.5"/><circle cx="114" cy="88" r="11" fill="none" stroke="#2b1a10" stroke-width="2.5"/><path d="M97 88H103" stroke="#2b1a10" stroke-width="2.5"/>':''}<path d="M100 92Q96 102 101 104" stroke="#000" stroke-opacity=".18" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M91 ${p.b?125:114}Q100 ${p.b?130:121} 109 ${p.b?125:114}" stroke="${p.b?'#f6e3d0':'#7a3b2b'}" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+return 'data:image/svg+xml;utf8,'+encodeURIComponent(sv)};
+const av=(x,l,s)=>{const i=Math.max(0,C.masters.indexOf(x));return `<span class="av ${l?'l':''} ${s?'s':''}"><img alt="${E(x.n||'')}" src="${E(x.pic||portrait(i))}"></span>`};
+const mcards=()=>`<h2>Мастера</h2><div class="mcs">${C.masters.map((x,i)=>`<div class="card mcd"><div class="ph"><img alt="${E(x.n)}" src="${E(x.pic||portrait(i))}"></div><b>${E(x.n)}</b><em class="rl">${E(x.r||'Барбер')}</em></div>`).join('')}</div>`;
 function slots(sv,mid,ds){const bk=ld(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],o={};
 for(const i of ids){const h=mh(i,ds);if(!h)continue;
 for(let x=h[0]*60;x+sv.m<=h[1]*60;x+=C.step){if((td&&x<=nm)||o[x]!=null)continue;
@@ -167,8 +184,8 @@ return `<div class="hd"><div class="adr"><svg viewBox="0 0 24 24"><path d="M12 2
 <div class="card facts"><div><b>${C.services.length}</b><span>услуг</span></div><div><b>${C.masters.length}</b><span>мастера</span></div><div><b>${min.toLocaleString('ru-RU')}</b><span>${C.cur}, от</span></div></div>
 <h2>Ближайшее окно</h2>
 ${n?`<button class="card next" onclick="openS(null,'${n.d}',${n.t})"><b>${E(when)}</b><span class="mu">Нажмите, чтобы занять это время.</span></button>`:'<div class="card mu">Свободных окон на ближайшие дни нет. Загляните позже.</div>'}
-<h2>Услуги</h2>${svcList()}`}
-function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}<h2>Мастера</h2><div class="card lst">${C.masters.map(x=>`<div><div class="mrow">${av(x)}<div style="display:grid;gap:4px"><b>${E(x.n)}</b><em class="rl">${E(x.r||'Барбер')}</em></div></div></div>`).join('')}</div>`}
+<h2>Услуги</h2>${svcList()}${mcards()}`}
+function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}${mcards()}`}
 function my(){const now=iso(new Date())+hm(new Date().getHours()*60+new Date().getMinutes()),key=b=>b.d+hm(b.t),a=ld().sort((x,y)=>key(x)<key(y)?-1:1),up=a.filter(b=>key(b)>=now),ps=a.filter(b=>key(b)<now).reverse();
 const card=(b,old)=>`<div class="card bk ${old?'old':''}"><div class="row"><b>${E(bn(b))}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}–${hm(b.t+b.u)}, мастер ${E(bm(b))}</div>${old?'':`<div class="acts"><button class="btn g" onclick="ics('${b.id}')">В календарь</button><button class="btn g ${S.cx===b.id?'dg':''}" onclick="cancel('${b.id}')">${S.cx===b.id?'Точно отменить?':'Отменить'}</button></div>`}</div>`;
 return `<h1 class="pg">Моя запись</h1>${up.length?`<div class="list">${up.map(b=>card(b)).join('')}</div>`:`<div class="card empty"><b>Записей пока нет</b><span class="mu">Выберите услугу и удобное время.</span><button class="btn" onclick="openS()">Записаться</button></div>`}${ps.length?`<h2>Прошедшие</h2><div class="list">${ps.map(b=>card(b,1)).join('')}</div>`:''}<p class="mu note">Демо-режим: записи хранятся только на этом телефоне.</p>`}
@@ -270,7 +287,7 @@ if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы запис
 const sv=SV(S.s),sl=slots(sv,S.m,S.d);if(S.t!=null&&!sl.some(x=>x.t===S.t))S.t=null;
 sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
 <p class="lb">Услуга</p><div class="chips">${C.services.map(x=>`<button class="chip ${x.id===S.s?'on':''}" onclick="pick('s','${x.id}')">${E(x.n)}<small>${x.m} мин, ${rub(x.p)}</small></button>`).join('')}</div>
-<p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${E(x.n)}${x.r?`<small>${E(x.r)}</small>`:''}</button>`).join('')}</div>
+<p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip mc ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${x.id==='any'?'<span class="av s">✦</span>':av(x,0,1)}<span>${E(x.n)}${x.r?`<small>${E(x.r)}</small>`:''}</span></button>`).join('')}</div>
 <p class="lb">Дата</p>${cal()}
 <p class="lb">Время</p>${sl.length?`<div class="times">${sl.map(x=>`<button class="chip ${x.t===S.t?'on':''}" onclick="pick('t',${x.t})">${hm(x.t)}</button>`).join('')}</div>`:'<p class="mu">На этот день свободных окон нет. Выберите другую дату или мастера.</p>'}
 <p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="numeric" placeholder="+7 (___) ___-__-__" autocomplete="tel-national" value="${E(S.p)}" oninput="ph(this)"><small>Номер из 11 цифр, например +7 (912) 345-67-89</small>
