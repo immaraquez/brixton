@@ -148,7 +148,7 @@ masters:[{id:'a',n:'Артём',r:'Топ Барбер'},{id:'d',n:'Валери
 const $=s=>document.querySelector(s),K='brixton_bookings';
 const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:'',vm:null};
 /* ===== SUPABASE: вставьте сюда Project URL и anon/publishable key (Project Settings -> API) ===== */
-const SB={url:'PASTE_SUPABASE_URL',key:'PASTE_SUPABASE_ANON_KEY'};
+const SB={url:'https://rrwpkjqxctuqhpskyudw.supabase.co',key:'sb_publishable_kKgM9_2HYyQ7VH2Xut7-tg_CcFU3bR0'};
 const ON=()=>/^https:\/\//.test(SB.url)&&SB.key.length>20;
 const lsg=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||d)}catch(e){return JSON.parse(d)}};
 const lss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
