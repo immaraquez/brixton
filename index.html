@@ -83,7 +83,7 @@ input{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);p
 .dy.on{border-color:var(--ac);background:rgba(217,68,46,.16)}
 .dy:disabled{background:0;color:#5a544c;cursor:default}
 input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
-.hd{display:flex;justify-content:flex-end;margin-bottom:10px}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
 .ic{width:42px;height:42px;flex:none;border-radius:50%;background:var(--cd);border:1px solid var(--ln);display:grid;place-items:center;color:var(--tx);font-size:20px}
 .ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}
 .back{background:0;border:0;color:var(--mu);font-size:15px;padding:8px 0}
@@ -101,6 +101,21 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
 .ed label.row{display:flex;color:var(--tx);font-size:16px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .lg input{margin-bottom:8px}
+.adr{display:flex;gap:6px;align-items:flex-start;color:var(--mu);font-size:13px;line-height:1.3}
+.adr svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8}
+input,select{color-scheme:dark}
+select{display:block;width:100%;background:var(--cd);border:1px solid var(--ln);padding:13px;border-radius:12px;font-size:16px;color:var(--tx);font-family:var(--f)}
+.av{width:48px;height:48px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--ln);color:var(--mu);font:700 20px var(--sf);overflow:hidden}
+.av.l{width:76px;height:76px;font-size:30px}
+.av img{width:100%;height:100%;object-fit:cover}
+.mrow{display:flex;gap:12px;align-items:center}
+.rl{font-style:normal;width:fit-content;font-size:12px;color:#ff8a76;border:1px solid var(--ac);border-radius:20px;padding:1px 9px}
+.cal .dy.w{background:rgba(127,209,139,.14)}
+.cal .dy.off{color:#7a5a52;background:0;border-color:var(--ln)}
+.up{text-align:center;cursor:pointer}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.sum .card{display:grid;gap:2px;padding:12px}
+.sum b{font:700 21px var(--sf)}
 </style>
 </head>
 <body>
@@ -112,20 +127,22 @@ input[type=checkbox]{display:inline-block;width:auto;margin:0 8px 0 0}
 </nav>
 <div class="sh" id="sh" onclick="if(event.target===this)closeS()"><div class="sheet" role="dialog" aria-modal="true" aria-label="Запись" tabindex="-1"></div></div>
 <script>
+const ROLES=['Топ Барбер','Барбер','Стажёр'],ADDR='г. Белореченск, ул. Ленина 76';
 const C={name:'Брикстон',tag:'Барбершоп. Стрижки, борода, бритьё.',cur:'₽',step:30,days:60,
 hours:{0:[11,18],1:[10,21],2:[10,21],3:[10,21],4:[10,21],5:[10,21],6:[10,20]},
 services:[{id:'cut',n:'Мужская стрижка',m:60,p:1800},{id:'beard',n:'Борода',m:30,p:1000},{id:'combo',n:'Стрижка и борода',m:90,p:2600},{id:'kid',n:'Детская стрижка',m:45,p:1300},{id:'shave',n:'Королевское бритьё',m:45,p:1500}],
-masters:[{id:'a',n:'Артём'},{id:'d',n:'Даниил'},{id:'m',n:'Максим'}]};
+masters:[{id:'a',n:'Артём',r:'Топ Барбер'},{id:'d',n:'Даниил',r:'Барбер'},{id:'m',n:'Максим',r:'Стажёр'}]};
 const $=s=>document.querySelector(s),K='brixton_bookings';
 const S={tab:'home',s:null,m:'any',d:null,t:null,n:'',p:'',done:null,cx:null,open:false,err:'',vm:null};
 try{const c=JSON.parse(localStorage.getItem('brixton_cfg')||'null');if(c&&c.services&&c.services.length&&c.masters&&c.masters.length&&c.hours&&Object.keys(c.hours).length){C.services=c.services;C.masters=c.masters;C.hours=c.hours}}catch(e){}
+C.masters.forEach(m=>{if(!m.r)m.r='Барбер'});
 const sc=()=>{try{localStorage.setItem('brixton_cfg',JSON.stringify({services:C.services,masters:C.masters,hours:C.hours}))}catch(e){}};
 const ld=()=>{try{return JSON.parse(localStorage.getItem(K)||'[]')}catch(e){return[]}};
 const put=a=>{try{localStorage.setItem(K,JSON.stringify(a));return true}catch(e){return false}};
 const E=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0');
 const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
-S.od=iso(new Date());S.os='sch';S.ov='d';S.bd=null;S.le='';S.me='';
+S.os='rec';S.mg='svc';S.bd=null;S.le='';S.me='';S.gm=null;S.gv=null;S.gd=null;{const n=new Date();S.ra=S.rb=iso(n);S.pa=iso(new Date(n.getFullYear(),n.getMonth(),1));S.pb=iso(new Date(n.getFullYear(),n.getMonth()+1,0));S.pm='all'}
 try{S.ow=localStorage.getItem('brixton_owner')==='1'}catch(e){S.ow=false}
 const hm=m=>pad(m/60|0)+':'+pad(m%60);
 const SV=id=>C.services.find(x=>x.id===id)||{n:'Услуга',m:60,p:0};
@@ -134,21 +151,24 @@ const bn=b=>b.sn||SV(b.s).n,bm=b=>b.mn||MS(b.m).n;
 const rub=n=>n.toLocaleString('ru-RU')+' '+C.cur;
 const dn=ds=>new Date(ds+'T00:00').toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long'});
 const dch=ds=>{const x=new Date(ds+'T00:00');return x.getDate()+'<small>'+x.toLocaleDateString('ru-RU',{weekday:'short'})+'</small>'};
-const days=()=>{const r=[];for(let i=0;i<C.days;i++){const d=new Date();d.setDate(d.getDate()+i);if(C.hours[d.getDay()])r.push(iso(d))}return r};
-function slots(sv,mid,ds){const h=C.hours[new Date(ds+'T00:00').getDay()];if(!h)return[];
-const bk=ld(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],out=[];
-for(let t=h[0]*60;t+sv.m<=h[1]*60;t+=C.step){if(td&&t<=nm)continue;
-const m=ids.find(i=>!bk.some(b=>b.m===i&&b.d===ds&&t<b.t+b.u&&b.t<t+sv.m));if(m)out.push({t,m})}return out}
+const mh=(id,ds)=>{const m=MS(id);if(m.sch&&ds in m.sch)return m.sch[ds];return C.hours[new Date(ds+'T00:00').getDay()]||null};
+const days=()=>{const r=[];for(let i=0;i<C.days;i++){const d=new Date();d.setDate(d.getDate()+i);const s=iso(d);if(C.masters.some(m=>mh(m.id,s)))r.push(s)}return r.length?r:[iso(new Date())]};
+const av=(x,l)=>`<span class="av ${l?'l':''}">${x.pic?`<img alt="" src="${E(x.pic)}">`:E((x.n||'?').trim().charAt(0).toUpperCase())}</span>`;
+function slots(sv,mid,ds){const bk=ld(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),td=iso(now)===ds,ids=mid==='any'?C.masters.map(x=>x.id):[mid],o={};
+for(const i of ids){const h=mh(i,ds);if(!h)continue;
+for(let x=h[0]*60;x+sv.m<=h[1]*60;x+=C.step){if((td&&x<=nm)||o[x]!=null)continue;
+if(!bk.some(b=>b.m===i&&b.d===ds&&x<b.t+b.u&&b.t<x+sv.m))o[x]=i}}
+return Object.keys(o).map(Number).sort((a,b)=>a-b).map(x=>({t:x,m:o[x]}))}
 function next(){const sv=C.services[0];for(const d of days()){const s=slots(sv,'any',d);if(s.length)return{d,t:s[0].t}}return null}
 const svcList=()=>`<div class="card lst">${C.services.map(x=>`<button onclick="openS('${x.id}')"><span><b>${E(x.n)}</b><small>${x.m} мин</small></span><span class="pr">${rub(x.p)}</span></button>`).join('')}</div>`;
 function home(){const n=next(),min=Math.min(...C.services.map(x=>x.p));
 const when=n?(n.d===iso(new Date())?'Сегодня':dn(n.d))+', '+hm(n.t):'';
-return `<div class="hd"><button class="ic" aria-label="Кабинет владельца" onclick="own()"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></button></div><div class="hero"><div class="pole"></div><h1>${E(C.name)}</h1><p class="mu">${E(C.tag)}</p><button class="btn" onclick="openS()">Записаться</button></div>
+return `<div class="hd"><div class="adr"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg><span>${E(ADDR).replace(", ",",<br>")}</span></div><button class="ic" aria-label="Кабинет владельца" onclick="own()"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></button></div><div class="hero"><div class="pole"></div><h1>${E(C.name)}</h1><p class="mu">${E(C.tag)}</p><button class="btn" onclick="openS()">Записаться</button></div>
 <div class="card facts"><div><b>${C.services.length}</b><span>услуг</span></div><div><b>${C.masters.length}</b><span>мастера</span></div><div><b>${min.toLocaleString('ru-RU')}</b><span>${C.cur}, от</span></div></div>
 <h2>Ближайшее окно</h2>
 ${n?`<button class="card next" onclick="openS(null,'${n.d}',${n.t})"><b>${E(when)}</b><span class="mu">Нажмите, чтобы занять это время.</span></button>`:'<div class="card mu">Свободных окон на ближайшие дни нет. Загляните позже.</div>'}
 <h2>Услуги</h2>${svcList()}`}
-function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}<h2>Мастера</h2><div class="card lst">${C.masters.map(x=>`<div><span><b>${E(x.n)}</b></span></div>`).join('')}</div>`}
+function svc(){return `<h1 class="pg">Услуги</h1>${svcList()}<h2>Мастера</h2><div class="card lst">${C.masters.map(x=>`<div><div class="mrow">${av(x)}<div style="display:grid;gap:4px"><b>${E(x.n)}</b><em class="rl">${E(x.r||'Барбер')}</em></div></div></div>`).join('')}</div>`}
 function my(){const now=iso(new Date())+hm(new Date().getHours()*60+new Date().getMinutes()),key=b=>b.d+hm(b.t),a=ld().sort((x,y)=>key(x)<key(y)?-1:1),up=a.filter(b=>key(b)>=now),ps=a.filter(b=>key(b)<now).reverse();
 const card=(b,old)=>`<div class="card bk ${old?'old':''}"><div class="row"><b>${E(bn(b))}</b><span class="pr">${rub(b.p)}</span></div><div class="mu">${dn(b.d)}, ${hm(b.t)}–${hm(b.t+b.u)}, мастер ${E(bm(b))}</div>${old?'':`<div class="acts"><button class="btn g" onclick="ics('${b.id}')">В календарь</button><button class="btn g ${S.cx===b.id?'dg':''}" onclick="cancel('${b.id}')">${S.cx===b.id?'Точно отменить?':'Отменить'}</button></div>`}</div>`;
 return `<h1 class="pg">Моя запись</h1>${up.length?`<div class="list">${up.map(b=>card(b)).join('')}</div>`:`<div class="card empty"><b>Записей пока нет</b><span class="mu">Выберите услугу и удобное время.</span><button class="btn" onclick="openS()">Записаться</button></div>`}${ps.length?`<h2>Прошедшие</h2><div class="list">${ps.map(b=>card(b,1)).join('')}</div>`:''}<p class="mu note">Демо-режим: записи хранятся только на этом телефоне.</p>`}
@@ -165,18 +185,45 @@ function logout(){S.ow=false;try{localStorage.removeItem('brixton_owner')}catch(
 const ot=k=>{S.os=k;S.cx=null;S.me='';render()};
 function ownV(){
 if(!S.ow)return `<button class="back" onclick="go('home')">‹ На главную</button><div class="card lg"><h1 class="pg">Вход для владельца</h1><input id="lu" placeholder="Логин" autocomplete="username" autocapitalize="none"><input id="lp" type="password" placeholder="Пароль" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"><p class="err" role="alert">${E(S.le)}</p><button class="btn" onclick="login()">Войти</button><p class="mu note">Тестовый вход: admin / admin</p></div>`;
-const tabs=[['sch','Расписание'],['svc','Услуги'],['mst','Мастера'],['hrs','Часы работы']];
-return `<div class="row"><button class="back" onclick="go('home')">‹ На главную</button><button class="back" onclick="logout()">Выйти</button></div><div class="chips">${tabs.map(([k,n])=>`<button class="chip ${S.os===k?'on':''}" onclick="ot('${k}')">${n}</button>`).join('')}</div>${S.os==='sch'?osch():S.os==='svc'?osvc():S.os==='mst'?omst():ohrs()}`}
-const osh=k=>{const x=new Date(S.od+'T00:00');x.setDate(x.getDate()+k*(S.ov==='w'?7:1));S.od=iso(x);render()};
-function osch(){const wk=S.ov==='w',d0=new Date(S.od+'T00:00');let a=S.od,b=S.od;
-if(wk){const x=new Date(d0);x.setDate(x.getDate()-(d0.getDay()+6)%7);a=iso(x);x.setDate(x.getDate()+6);b=iso(x)}
-const sd=s=>new Date(s+'T00:00').toLocaleDateString('ru-RU',{day:'numeric',month:'short'}),lab=wk?sd(a)+' – '+sd(b):d0.toLocaleDateString('ru-RU',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
-const L=ld().filter(r=>r.d>=a&&r.d<=b).sort((x,y)=>(x.d+hm(x.t))<(y.d+hm(y.t))?-1:1),ok_=L.filter(r=>r.st==='done');
-let h='',last='';for(const r of L){if(wk&&r.d!==last){last=r.d;h+=`<h2>${dn(r.d)}</h2>`}h+=`<button class="card rw" onclick="openB('${r.id}')"><div class="row"><b>${hm(r.t)}–${hm(r.t+r.u)}</b><em class="bd ${r.st==='done'?'ok':''}">${r.st==='done'?'Выполнена':'Подтверждена'}</em></div><span>${E(bn(r))}</span><small>${E(r.n)}, мастер ${E(bm(r))}</small></button>`}
-return `<h1 class="pg" style="margin-top:12px">Расписание</h1><div class="dn"><button class="ic" aria-label="Назад" onclick="osh(-1)">‹</button><button class="chip" style="flex:1;text-align:center" onclick="S.od=iso(new Date());render()">${lab}</button><button class="ic" aria-label="Вперёд" onclick="osh(1)">›</button></div>
-<div class="seg"><button class="chip ${wk?'':'on'}" style="text-align:center" onclick="S.ov='d';render()">День</button><button class="chip ${wk?'on':''}" style="text-align:center" onclick="S.ov='w';render()">Неделя</button></div>
-<div class="stats"><div class="card"><small>Записи</small><b>${L.length}</b></div><div class="card"><small>Выполнено</small><b>${ok_.length}</b></div><div class="card"><small>Получено</small><b>${rub(ok_.reduce((t,r)=>t+r.p,0))}</b></div></div>
-<button class="btn" onclick="openS()">Добавить запись</button><div class="list" style="margin-top:12px">${h||'<div class="card mu">На эти даты записей нет.</div>'}</div>`}
+const tabs=[['mng','Управление'],['rec','Записи'],['rep','Отчётность']];
+return `<div class="row"><button class="back" onclick="go('home')">‹ На главную</button><button class="back" onclick="logout()">Выйти</button></div><div class="chips">${tabs.map(([k,n])=>`<button class="chip ${S.os===k?'on':''}" onclick="ot('${k}')">${n}</button>`).join('')}</div>${S.os==='mng'?omng():S.os==='rep'?orep():orec()}`}
+const key=r=>r.d+hm(r.t);
+const rcard=r=>`<button class="card rw" onclick="openB('${r.id}')"><div class="row"><b>${hm(r.t)}–${hm(r.t+r.u)}</b><em class="bd ${r.st==='done'?'ok':''}">${r.st==='done'?'Выполнена':'Подтверждена'}</em></div><span><b>${E(bn(r))}</b> · ${rub(r.p)}</span><small>Мастер: ${E(bm(r))}, клиент: ${E(r.n)}</small></button>`;
+const rngH=(p,q)=>`<div class="chips" style="margin-top:8px">${q.map(([k,n])=>`<button class="chip" onclick="rq('${p}','${k}')">${n}</button>`).join('')}</div><div class="ed" style="margin:6px 0 12px"><div class="two"><label>С даты<input type="date" value="${S[p+'a']}" onchange="rng('${p}','a',this.value)"></label><label>По дату<input type="date" value="${S[p+'b']}" onchange="rng('${p}','b',this.value)"></label></div></div>`;
+function rng(p,k,v){if(!v){render();return}S[p+k]=v;if(S[p+'a']>S[p+'b']){if(k==='a')S[p+'b']=v;else S[p+'a']=v}render()}
+function rq(p,k){const n=new Date(),y=n.getFullYear(),m=n.getMonth(),d=n.getDate(),w=(n.getDay()+6)%7;let a,b;
+if(k==='t')a=b=new Date(y,m,d);else if(k==='n')a=b=new Date(y,m,d+1);else if(k==='w'){a=new Date(y,m,d-w);b=new Date(y,m,d-w+6)}else if(k==='m'){a=new Date(y,m,1);b=new Date(y,m+1,0)}else{a=new Date(y,m-1,1);b=new Date(y,m,0)}
+S[p+'a']=iso(a);S[p+'b']=iso(b);render()}
+function orec(){const L=ld().filter(r=>r.d>=S.ra&&r.d<=S.rb).sort((x,y)=>key(x)<key(y)?-1:1);
+let h='',last='';for(const r of L){if(r.d!==last){last=r.d;h+=`<h2>${dn(r.d)}</h2>`}h+=rcard(r)}
+return `<h1 class="pg" style="margin-top:12px">Записи</h1>${rngH('r',[['t','Сегодня'],['n','Завтра'],['w','Неделя'],['m','Месяц']])}<div class="list">${h||'<div class="card mu">На эти даты записей нет.</div>'}</div><button class="btn" style="margin-top:12px" onclick="openS()">Добавить запись</button>`}
+function orep(){if(S.pm!=='all'&&!C.masters.some(m=>m.id===S.pm))S.pm='all';
+const L=ld().filter(r=>r.d>=S.pa&&r.d<=S.pb&&(S.pm==='all'||r.m===S.pm)).sort((x,y)=>key(x)<key(y)?-1:1),dn_=L.filter(r=>r.st==='done'),sm=a=>a.reduce((t,r)=>t+r.p,0);
+let by='';if(S.pm==='all'&&L.length){const g={};for(const r of L){const o=g[r.m]=g[r.m]||{n:bm(r),c:0,s:0};o.c++;if(r.st==='done')o.s+=r.p}
+by=`<h2>По мастерам</h2><div class="card lst">${Object.values(g).map(o=>`<div><span><b>${E(o.n)}</b><small>записей: ${o.c}</small></span><span class="pr">${rub(o.s)}</span></div>`).join('')}</div>`}
+let h='',last='';for(const r of L){if(r.d!==last){last=r.d;h+=`<h2>${dn(r.d)}</h2>`}h+=rcard(r)}
+return `<h1 class="pg" style="margin-top:12px">Отчётность</h1><div class="chips">${[{id:'all',n:'Все мастера'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.pm?'on':''}" onclick="S.pm='${x.id}';render()">${E(x.n)}</button>`).join('')}</div>${rngH('p',[['w','Неделя'],['m','Месяц'],['l','Прошлый месяц']])}
+<div class="sum"><div class="card"><small>Записей</small><b>${L.length}</b></div><div class="card"><small>Выполнено</small><b>${dn_.length}</b></div><div class="card"><small>Выручка</small><b>${rub(sm(dn_))}</b></div><div class="card"><small>Ожидается</small><b>${rub(sm(L.filter(r=>r.st!=='done')))}</b></div></div>
+<p class="mu">Выручка считается по записям, отмеченным как выполненные.</p>${by}${L.length?`<h2 style="margin-bottom:0">Все записи</h2>${h}`:'<div class="card mu" style="margin-top:12px">За выбранные даты записей нет.</div>'}`}
+function omng(){const t=[['svc','Услуги'],['mst','Мастера'],['gr','График']];
+return `<h1 class="pg" style="margin-top:12px">Управление</h1><div class="chips">${t.map(([k,n])=>`<button class="chip ${S.mg===k?'on':''}" onclick="S.mg='${k}';S.cx=null;S.me='';render()">${n}</button>`).join('')}</div>${S.mg==='mst'?omst():S.mg==='gr'?ogr():osvc()}`}
+function ogr(){if(!C.masters.some(m=>m.id===S.gm))S.gm=C.masters[0].id;
+if(!S.gv){const n=new Date();S.gv={y:n.getFullYear(),m:n.getMonth()}}
+const m=MS(S.gm),v=S.gv,f=new Date(v.y,v.m,1),n=new Date(v.y,v.m+1,0).getDate(),off=(f.getDay()+6)%7,pre=v.y+'-'+pad(v.m+1);
+let h='';for(const w of['Пн','Вт','Ср','Чт','Пт','Сб','Вс'])h+=`<span class="wd">${w}</span>`;
+for(let i=0;i<off;i++)h+='<i></i>';
+for(let d=1;d<=n;d++){const ds=pre+'-'+pad(d);h+=`<button class="dy ${mh(m.id,ds)?'w':'off'} ${ds===S.gd?'on':''}" aria-label="${dn(ds)}" onclick="S.gd='${ds}';render()">${d}</button>`}
+let e='';if(S.gd&&S.gd.slice(0,7)===pre){const w=mh(m.id,S.gd),wd=new Date(S.gd+'T00:00').toLocaleDateString('ru-RU',{weekday:'long'});
+e=`<div class="card ed" style="margin-top:12px"><b>${dn(S.gd)}</b><div class="seg"><button class="chip ${w?'on':''}" style="text-align:center" onclick="gs('${S.gd}',1)">Работает</button><button class="chip ${w?'':'on'}" style="text-align:center" onclick="gs('${S.gd}',0)">Выходной</button></div>${w?`<div class="two"><label>С, часов<input type="number" inputmode="numeric" min="0" max="23" value="${w[0]}" onchange="gh('${S.gd}',0,this.value)"></label><label>До, часов<input type="number" inputmode="numeric" min="1" max="24" value="${w[1]}" onchange="gh('${S.gd}',1,this.value)"></label></div>`:''}<button class="btn g" onclick="gw()">Повторить на все дни недели «${E(wd)}» в этом месяце</button></div>`}
+return `<p class="lb" style="margin-top:14px">Мастер</p><div class="chips">${C.masters.map(x=>`<button class="chip ${x.id===S.gm?'on':''}" onclick="S.gm='${x.id}';S.gd=null;render()">${E(x.n)}<small>${E(x.r||'Барбер')}</small></button>`).join('')}</div>
+<div class="mh" style="margin-top:8px"><button aria-label="Прошлый месяц" onclick="gn(-1)">‹</button><b>${f.toLocaleDateString('ru-RU',{month:'long',year:'numeric'})}</b><button aria-label="Следующий месяц" onclick="gn(1)">›</button></div><div class="cal">${h}</div>
+<p class="mu note" style="margin-top:10px">Зелёные дни: мастер работает. Тёмные: выходной. Нажмите на день, чтобы изменить.</p>${e}<p class="mu note">Новый график влияет только на будущие записи клиентов. Уже созданные записи не отменяются.</p>`}
+function gn(k){const x=new Date(S.gv.y,S.gv.m+k,1);S.gv={y:x.getFullYear(),m:x.getMonth()};S.gd=null;render()}
+function gs(ds,on){const m=C.masters.find(x=>x.id===S.gm);if(!m)return;m.sch=m.sch||{};m.sch[ds]=on?(mh(m.id,ds)||C.hours[new Date(ds+'T00:00').getDay()]||[10,20]).slice():null;sc();render()}
+function gh(ds,i,v){const m=C.masters.find(x=>x.id===S.gm);if(!m)return;v=Math.round(+v);const h=(mh(m.id,ds)||[10,20]).slice();h[i]=v;
+if(h[0]>=0&&h[0]<=23&&h[1]<=24&&h[0]<h[1]){m.sch=m.sch||{};m.sch[ds]=h;sc()}render()}
+function gw(){const m=C.masters.find(x=>x.id===S.gm),ds=S.gd;if(!m||!ds)return;const w=mh(m.id,ds),dw=new Date(ds+'T00:00').getDay(),v=S.gv,n=new Date(v.y,v.m+1,0).getDate();m.sch=m.sch||{};
+for(let d=1;d<=n;d++){const x=new Date(v.y,v.m,d);if(x.getDay()===dw)m.sch[iso(x)]=w?w.slice():null}sc();render()}
 function openB(id){prev=document.activeElement;S.bd=id;S.cx=null;S.open=true;$('#sh').classList.add('open');history.pushState({s:1},'');sheet();$('.sheet').focus()}
 function bsheet(sh){const r=ld().find(x=>x.id===S.bd);
 if(!r){sh.innerHTML='<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div><p class="mu" style="margin-top:12px">Запись не найдена.</p>';return}
@@ -192,17 +239,22 @@ if(k==='n'){v=v.trim();if(v){x.n=v;good=true}}else{v=Math.round(+v);if(k==='m'&&
 if(good)sc();else render()}
 function sa(){C.services.push({id:'s'+Date.now().toString(36),n:'Новая услуга',m:60,p:1000});sc();render()}
 function sx(id){if(S.cx!==id){S.cx=id;render();return}C.services=C.services.filter(x=>x.id!==id);S.cx=null;sc();render()}
-function omst(){return `<div class="list" style="margin-top:12px">${C.masters.map(x=>`<div class="card ed"><input aria-label="Имя мастера" value="${E(x.n)}" onchange="me('${x.id}',this.value)">${C.masters.length>1?`<button class="btn g ${S.cx===x.id?'dg':''}" onclick="md('${x.id}')">${S.cx===x.id?'Точно убрать?':'Убрать мастера'}</button>`:''}</div>`).join('')}</div><p class="err" role="alert">${E(S.me)}</p><button class="btn" onclick="ma()">Добавить мастера</button>`}
+function omst(){return `<div class="list" style="margin-top:12px">${C.masters.map(x=>`<div class="card ed"><div class="mrow">${av(x,1)}<div class="ed" style="flex:1"><label class="btn g up" style="padding:10px;font-size:14px;color:var(--tx)">${x.pic?'Сменить фото':'Загрузить фото'}<input type="file" accept="image/*" style="display:none" onchange="mph('${x.id}',this)"></label>${x.pic?`<button class="btn g" style="padding:10px;font-size:14px" onclick="mpx('${x.id}')">Убрать фото</button>`:''}</div></div>
+<label>Имя<input aria-label="Имя мастера" value="${E(x.n)}" onchange="me('${x.id}',this.value)"></label>
+<label>Должность<select onchange="mr('${x.id}',this.value)">${ROLES.map(r=>`<option ${r===(x.r||'Барбер')?'selected':''}>${r}</option>`).join('')}</select></label>
+${C.masters.length>1?`<button class="btn g ${S.cx===x.id?'dg':''}" onclick="md('${x.id}')">${S.cx===x.id?'Точно убрать?':'Убрать мастера'}</button>`:''}</div>`).join('')}</div><p class="err" role="alert">${E(S.me)}</p><button class="btn" onclick="ma()">Добавить мастера</button>`}
+function mr(id,v){const x=C.masters.find(m=>m.id===id);if(x&&ROLES.includes(v)){x.r=v;sc()}render()}
+function mpx(id){const x=C.masters.find(m=>m.id===id);if(x){delete x.pic;sc()}render()}
+function mph(id,inp){const f=inp.files&&inp.files[0],x=C.masters.find(m=>m.id===id);if(!f||!x)return;
+const im=new Image(),u=URL.createObjectURL(f);
+im.onload=()=>{const z=320,c=document.createElement('canvas');c.width=c.height=z;const s=Math.min(im.width,im.height);c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,z,z);x.pic=c.toDataURL('image/jpeg',.82);URL.revokeObjectURL(u);sc();render()};
+im.onerror=()=>{URL.revokeObjectURL(u);S.me='Не удалось открыть это фото. Выберите другое.';render()};im.src=u}
 function me(id,v){const x=C.masters.find(m=>m.id===id);v=v.trim();if(x&&v){x.n=v;sc()}else render()}
-function ma(){C.masters.push({id:'m'+Date.now().toString(36),n:'Новый мастер'});S.me='';sc();render()}
+function ma(){C.masters.push({id:'m'+Date.now().toString(36),n:'Новый мастер',r:'Барбер'});S.me='';sc();render()}
 function md(id){if(S.cx!==id){S.cx=id;S.me='';render();return}
 const now=iso(new Date())+hm(new Date().getHours()*60+new Date().getMinutes());
 if(ld().some(b=>b.m===id&&b.d+hm(b.t)>=now)){S.me='У мастера есть будущие записи. Сначала отмените или завершите их.';S.cx=null;render();return}
 C.masters=C.masters.filter(m=>m.id!==id);S.cx=null;S.me='';sc();render()}
-function ohrs(){const N=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
-return `<div class="list" style="margin-top:12px">${[1,2,3,4,5,6,0].map(d=>{const h=C.hours[d];return `<div class="card ed"><label class="row"><b>${N[d]}</b><span><input type="checkbox" ${h?'checked':''} onchange="hw(${d},this.checked)">работает</span></label>${h?`<div class="two"><label>С, часов<input type="number" inputmode="numeric" min="0" max="23" value="${h[0]}" onchange="hh(${d},0,this.value)"></label><label>До, часов<input type="number" inputmode="numeric" min="1" max="24" value="${h[1]}" onchange="hh(${d},1,this.value)"></label></div>`:''}</div>`}).join('')}</div><p class="mu note">Часы одинаковы для всех мастеров. Отдельный график каждого мастера добавим после подключения базы.</p>`}
-function hw(d,on){if(on)C.hours[d]=[10,20];else if(Object.keys(C.hours).length>1)delete C.hours[d];sc();render()}
-function hh(d,i,v){v=Math.round(+v);const h=C.hours[d].slice();h[i]=v;if(h[0]>=0&&h[0]<=23&&h[1]<=24&&h[0]<h[1]){C.hours[d]=h;sc()}else render()}
 function cal(){const v=S.vm,f=new Date(v.y,v.m,1),n=new Date(v.y,v.m+1,0).getDate(),off=(f.getDay()+6)%7,al=days(),ok=new Set(al),a=new Date(al[0]+'T00:00'),z=new Date(al[al.length-1]+'T00:00'),c=v.y*12+v.m;
 let h='';for(const w of['Пн','Вт','Ср','Чт','Пт','Сб','Вс'])h+=`<span class="wd">${w}</span>`;
 for(let i=0;i<off;i++)h+='<i></i>';
@@ -218,7 +270,7 @@ if(S.done){const b=S.done;sh.innerHTML=`<h2 style="margin-top:0">Вы запис
 const sv=SV(S.s),sl=slots(sv,S.m,S.d);if(S.t!=null&&!sl.some(x=>x.t===S.t))S.t=null;
 sh.innerHTML=`<div class="row"><h2 style="margin:0">Запись</h2><button class="x" aria-label="Закрыть" onclick="closeS()">✕</button></div>
 <p class="lb">Услуга</p><div class="chips">${C.services.map(x=>`<button class="chip ${x.id===S.s?'on':''}" onclick="pick('s','${x.id}')">${E(x.n)}<small>${x.m} мин, ${rub(x.p)}</small></button>`).join('')}</div>
-<p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${E(x.n)}</button>`).join('')}</div>
+<p class="lb">Мастер</p><div class="chips">${[{id:'any',n:'Любой'}].concat(C.masters).map(x=>`<button class="chip ${x.id===S.m?'on':''}" onclick="pick('m','${x.id}')">${E(x.n)}${x.r?`<small>${E(x.r)}</small>`:''}</button>`).join('')}</div>
 <p class="lb">Дата</p>${cal()}
 <p class="lb">Время</p>${sl.length?`<div class="times">${sl.map(x=>`<button class="chip ${x.t===S.t?'on':''}" onclick="pick('t',${x.t})">${hm(x.t)}</button>`).join('')}</div>`:'<p class="mu">На этот день свободных окон нет. Выберите другую дату или мастера.</p>'}
 <p class="lb">Ваши контакты</p><input placeholder="Имя" autocomplete="name" value="${E(S.n)}" oninput="S.n=this.value;chk()"><input type="tel" inputmode="numeric" placeholder="+7 (___) ___-__-__" autocomplete="tel-national" value="${E(S.p)}" oninput="ph(this)"><small>Номер из 11 цифр, например +7 (912) 345-67-89</small>
